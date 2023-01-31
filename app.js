@@ -23,7 +23,9 @@ for (const name of Object.keys(nets)) {
     }}
 
 
-console.log(results[1]);
+import fs from 'fs';
+var files = fs.readdirSync('./static/files');
+console.log(files)
 
 const app =express();
 const port =8080;
@@ -31,4 +33,14 @@ app.listen(port , results[1],()=>{
     console.log("http://"+results[1]+":"+port)
 });
 
-app.use(express.static(path.resolve(__dirname,"static")))
+const html =(url)=> `
+<a href='${url}' download>${url}</a> <video height='400' controls autoplay src='/${url}'></video>
+`
+
+app.use(express.static(path.resolve(__dirname,"static")));
+ app.get('/', (req, res)=>{
+     res.setHeader("Content-Type", "text/html")
+     res.send(files.map((item)=>{
+         return html("files/"+item);
+     }));
+ })
